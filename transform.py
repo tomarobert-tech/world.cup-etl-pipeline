@@ -16,11 +16,11 @@ def transforma_date_world_cup():
     cale_citire = "data_raw/meciuri_wc_raw.json"
     cale_salvare = "data_clean/meciuri_wc_curat.csv"
     
-    print("🧹 [Transform] Starting ETL: Cleaning and transforming World Cup data...")
+    print("[Transform] Starting ETL: Cleaning and transforming World Cup data...")
 
     # Defensive check: ensure the raw data from the Extract step exists
     if not os.path.exists(cale_citire):
-        print(f"❌ [Transform] Error: Raw file not found at path {cale_citire}. Run extract.py first!")
+        print(f"[Transform] Error: Raw file not found at path {cale_citire}. Run extract.py first!")
         return None
      
     try:
@@ -32,7 +32,7 @@ def transforma_date_world_cup():
         lista_meciuri = date_brute['matches']
         meciuri_curate = []
 
-        print(f"🔄 [Transform] Processing {len(lista_meciuri)} matches found in the file...")
+        print(f"[Transform] Processing {len(lista_meciuri)} matches found in the file...")
 
         # Iterate through each match to flatten the nested JSON dictionary structure
         for meci in lista_meciuri:
@@ -67,7 +67,7 @@ def transforma_date_world_cup():
                 "goluri_gazda": g_gazda,
                 "goluri_oaspete": g_oaspete,
                 
-                # 📊 ENGINEERED METRICS FOR PORTFOLIO
+                # ENGINEERED METRICS FOR PORTFOLIO
                 "eficienta_atac": (g_gazda + g_oaspete) if (g_gazda is not None and g_oaspete is not None) else 0,
                 "meci_cu_prelungiri": are_prelungiri,
                 "scor_final_detaliat": scor_detaliat
@@ -91,13 +91,13 @@ def transforma_date_world_cup():
         os.makedirs("data_clean", exist_ok=True)
         df.to_csv(cale_salvare, index=False, encoding="utf-8")
 
-        print(f"💾 [Transform] Success! Data transformed and saved to: {cale_salvare}")
+        print(f"[Transform] Success! Data transformed and saved to: {cale_salvare}")
         print(df.head(3))
         
         return df  # Return DataFrame to be directly consumed by load.py in the orchestrator
     
     except Exception as e:
-        print(f"❌ [Transform] An error occurred during data transformation: {e}")
+        print(f"[Transform] An error occurred during data transformation: {e}")
         return None
 
 if __name__ == "__main__":

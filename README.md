@@ -1,15 +1,15 @@
-# ⚽ World Cup 2026 End-to-End Data Engineering & BI Pipeline
+# World Cup 2026 End-to-End Data Engineering & BI Pipeline
 
 An end-to-end Data Engineering project that simulates a production-ready hybrid ETL pipeline. The system extracts World Cup match data from a REST API, processes and cleans it using Python, loads it into a PostgreSQL relational database, and visualizes key performance metrics via a premium Power BI Dashboard.
 
 ---
 
-## 🖼️ Dashboard Preview
+## Dashboard Preview
 ![Dashboard Preview](dashboard.png)
 
 ---
 
-## 🛠️ Architecture & Tech Stack
+## Architecture & Tech Stack
 * **Language:** Python 3.x
 * **Data Manipulation:** Pandas
 * **Database & ORM:** PostgreSQL / SQLAlchemy
@@ -18,7 +18,7 @@ An end-to-end Data Engineering project that simulates a production-ready hybrid 
 
 ---
 
-## 🔄 ETL Flow & Data Pipeline
+## ETL Flow & Data Pipeline
 
 ### 1. Extract
 * Designed to connect to a commercial football REST API (`football-data.org`) to fetch raw match schedules and results in JSON format.
@@ -35,7 +35,7 @@ An end-to-end Data Engineering project that simulates a production-ready hybrid 
 
 ---
 
-## 🗄️ Database Schema & Analytical Queries
+## Database Schema & Analytical Queries
 Once loaded, the data is structured to allow deep SQL analysis. Example queries:
 
 ### 1. Top 5 most spectacular matches (by number of goals)
@@ -54,7 +54,7 @@ LIMIT 5;
 ``` 
 ### 2. Avarage goals scored by competition phase
 ```sql
-SELECT 
+SELECT  
     faza_competitie,
     COUNT(*) AS numar_meciuri,
     ROUND(AVG(eficienta_atac), 2) AS medie_goluri_pe_meci
@@ -76,14 +76,14 @@ FROM
 GROUP BY 
     echipa_gazda
 HAVING 
-    SUM(goluri_gazda) > (SELECT AVG(goluri_gazda) FROM meciuri_world_cup)
+    AVG(goluri_gazda) > (SELECT AVG(goluri_gazda) FROM meciuri_world_cup)
 ORDER BY 
     total_goluri_acasa DESC;
 ```
 
 ---
 
-## 📊 Power BI Business Insights & Analytics
+## Power BI Business Insights & Analytics
 
 The interactive dashboard transforms raw match data into actionable sports analytics, focusing on team performance, tournament dynamics, and match intensity:
 
@@ -94,7 +94,7 @@ The interactive dashboard transforms raw match data into actionable sports analy
 
 ---
 
-## 🚀 How to Run the Project Locally
+## How to Run the Project Locally
 
 1. **Clone the repository:**
 ```bash

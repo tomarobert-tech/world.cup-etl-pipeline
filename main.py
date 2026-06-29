@@ -20,17 +20,17 @@ def ruleaza_tot_pipeline_ul():
     [TEST MODE]: Skip Extract -> Transform (Local JSON) -> Load (Into PostgreSQL)
     """
     print("==================================================")
-    print("🎬 STARTING AUTOMATED DATA ENGINEERING PIPELINE (ETL) - [TEST MODE]")
+    print("STARTING AUTOMATED DATA ENGINEERING PIPELINE (ETL) - [TEST MODE]")
     print("==================================================")
     
     # ----------------------------------------------------
     # STAGE 1: EXTRACT (TEMPORARILY BYPASSED TO AVOID 403 ERROR)
     # ----------------------------------------------------
-    print("⏳ [Extract] Test mode active: Skipping restricted API endpoint, loading local raw JSON snapshot.")
+    print("[Extract] Test mode active: Skipping restricted API endpoint, loading local raw JSON snapshot.")
     # date_brute = extrage_meciuri_world_cup()
     # if date_brute is None:
-    #     print("🛑 Pipeline stopped: Extraction step did not return any data.")
-    #     return
+        # print("Pipeline stopped: Extraction step did not return any data.")
+        # return
         
     print("\n--------------------------------------------------")
     
@@ -42,10 +42,10 @@ def ruleaza_tot_pipeline_ul():
         # clean the data, and return the DataFrame in memory.
         df_curat = transforma_date_world_cup()
         if df_curat is None:
-            print("🛑 Pipeline stopped: Transformation step failed.")
+            print("Pipeline stopped: Transformation step failed.")
             return
     except Exception as e:
-        print(f"🛑 Pipeline stopped at Transformation stage due to a critical error: {e}")
+        print(f"Pipeline stopped at Transformation stage due to a critical error: {e}")
         return
         
     print("\n--------------------------------------------------")
@@ -57,11 +57,11 @@ def ruleaza_tot_pipeline_ul():
         # Send the clean data directly into the local PostgreSQL database
         incarca_date_in_sql(df_intrare=df_curat)
     except Exception as e:
-        print(f"🛑 Pipeline stopped at Load stage: {e}")
+        print(f"Pipeline stopped at Load stage: {e}")
         return
         
     print("==================================================")
-    print("🏁 PIPELINE SUCCESSFULLY COMPLETED! (DATA REPROCESSED LOCALLY)")
+    print("PIPELINE SUCCESSFULLY COMPLETED! (DATA REPROCESSED LOCALLY)")
     print("==================================================")
 
 if __name__ == "__main__":
