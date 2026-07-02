@@ -8,7 +8,10 @@ An end-to-end Data Engineering project that simulates a production-ready hybrid 
 
 The pipeline follows a simple 3-step ETL process:
 
-[API / JSON Files] 
+## Project Architecture (Data Flow)
+
+```
+[API / JSON Files]
          │
          ▼
     1. EXTRACT   --> Gets data from the API (or from local files if the API errors out)
@@ -21,6 +24,7 @@ The pipeline follows a simple 3-step ETL process:
          │
          ▼
 [Power BI Dashboard]
+```
 
 ### How it works:
 
