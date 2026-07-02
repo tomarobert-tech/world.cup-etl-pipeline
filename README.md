@@ -4,6 +4,30 @@ An end-to-end Data Engineering project that simulates a production-ready hybrid 
 
 ---
 
+## Project Architecture (Data Flow)
+
+The pipeline follows a simple 3-step ETL process:
+
+[API / JSON Files] 
+         │
+         ▼
+    1. EXTRACT   --> Gets data from the API (or from local files if the API errors out)
+         │
+         ▼
+    2. TRANSFORM --> Cleans and structures the data using Pandas
+         │
+         ▼
+    3. LOAD      --> Saves the clean data into PostgreSQL using SQLAlchemy
+         │
+         ▼
+[Power BI Dashboard]
+
+### How it works:
+
+1. **Extract**: The script fetches tournament data from a football REST API. If the API faces connectivity issues, a local fallback system automatically reads stored JSON files so the script doesn't crash.
+2. **Transform**: I use `pandas` to flatten the nested JSON data, handle missing values, and organize everything into clean tables.
+3. **Load**: The final data is automatically inserted into a **PostgreSQL** database via `SQLAlchemy`. From there, the database connects directly to **Power BI** for visualization.
+
 ## Dashboard Preview
 ![Dashboard Preview](dashboard.png)
 
