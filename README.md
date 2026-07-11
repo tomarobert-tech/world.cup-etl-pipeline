@@ -66,17 +66,18 @@ The pipeline follows a simple 3-step ETL process:
 ## Database Schema & Analytical Queries
 Once loaded, the data is structured to allow deep SQL analysis. Example queries:
 
-### 1. Top 5 most spectacular matches (by number of goals)
+### 1. Top 5 most spectacular matches (by total goals scored)
 ```sql
 SELECT 
-    echipa_gazda, 
-    echipa_oaspete, 
-    faza_competitie, 
-    eficienta_atac AS total_goluri
-FROM 
-    meciuri_world_cup
-ORDER BY 
-    eficienta_atac DESC
+    m.id_meci,
+    m.faza_competitie,
+    eg.nume_echipa AS echipa_gazda,
+    eo.nume_echipa AS echipa_oaspete,
+    m.eficienta_atac AS total_goluri
+FROM meciuri_world_cup m
+INNER JOIN echipe eg ON m.id_echipa_gazda = eg.id_echipa
+INNER JOIN echipe eo ON m.id_echipa_oaspete = eo.id_echipa
+ORDER BY m.eficienta_atac DESC
 LIMIT 5;
 
 ``` 
@@ -86,28 +87,61 @@ SELECT
     faza_competitie,
     COUNT(*) AS numar_meciuri,
     ROUND(AVG(eficienta_atac), 2) AS medie_goluri_pe_meci
-FROM 
-    meciuri_world_cup
-GROUP BY 
-    faza_competitie
-ORDER BY 
-    medie_goluri_pe_meci DESC;
+FROM meciuri_world_cup
+GROUP BY faza_competitie;
+
 ```
 ### 3. Home teams that scored above the overall tournament average
 ```sql
 SELECT 
-    echipa_gazda,
-    SUM(goluri_gazda) AS total_goluri_acasa,
+    eg.nume_echipa AS echipa_gazda,
+    SUM(m.goluri_gazda) AS total_goluri_acasa,
     COUNT(*) AS meciuri_jucate_acasa
-FROM 
-    meciuri_world_cup
-GROUP BY 
-    echipa_gazda
-HAVING 
-    AVG(goluri_gazda) > (SELECT AVG(goluri_gazda) FROM meciuri_world_cup)
-ORDER BY 
-    total_goluri_acasa DESC;
+FROM meciuri_world_cup m
+INNER JOIN echipe eg ON m.id_echipa_gazda = eg.id_echipa
+GROUP BY eg.nume_echipa
+HAVING AVG(m.goluri_gazda) > (SELECT AVG(goluri_gazda) FROM meciuri_world_cup)
+ORDER BY total_goluri_acasa DESC;
+
 ```
+### 4. Phase-Isolated Goal Rankings (Tracks and ranks the most explosive matches isolated inside each individual tournament phase, filtering out everything except the Top 2 matches per stage.)
+```sql
+WITH meciuri_rankate AS (
+    SELECT 
+        m.faza_competitie,
+        eg.nume_echipa AS echipa_gazda,
+        eo.nume_echipa AS echipa_oaspete,
+        m.eficienta_atac AS total_goluri,
+        DENSE_RANK() OVER (
+            PARTITION BY m.faza_competitie 
+            ORDER BY m.eficienta_atac DESC
+        ) AS pozitie_top
+    FROM meciuri_world_cup m
+    INNER JOIN echipe eg ON m.id_echipa_gazda = eg.id_echipa
+    INNER JOIN echipe eo ON m.id_echipa_oaspete = eo.id_echipa
+)
+SELECT * FROM meciuri_rankate 
+WHERE pozitie_top <= 2;
+
+```
+### 5. Cumulative Team Performance Ledger (Aggregates and merges separate metrics for home and away profiles into a unified database leaderboard, demonstrating advanced dataset blending without data loss.)
+```sql
+WITH goluri_acasa AS (
+    SELECT id_echipa_gazda AS id_echipa, SUM(goluri_gazda) AS goluri FROM meciuri_world_cup GROUP BY id_echipa_gazda
+),
+goluri_deplasare AS (
+    SELECT id_echipa_oaspete AS id_echipa, SUM(goluri_oaspete) AS goluri FROM meciuri_world_cup GROUP BY id_echipa_oaspete
+)
+SELECT 
+    e.nume_echipa,
+    COALESCE(ga.goluri, 0) + COALESCE(gd.goluri, 0) AS total_goluri_marcate
+FROM echipe e
+LEFT JOIN goluri_acasa ga ON e.id_echipa = ga.id_echipa
+LEFT JOIN goluri_deplasare gd ON e.id_echipa = gd.id_echipa
+ORDER BY total_goluri_marcate DESC;
+
+```
+
 ### UPGRADE
 To implement industry best practices and ensure data integrity, the PostgreSQL database has been upgraded from a flat table structure to a **Normalized Relational Schema** (Star Schema approach). 
 
