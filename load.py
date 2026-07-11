@@ -96,7 +96,8 @@ def incarca_date_in_sql(df_intrare=None):
             df['id_echipa_gazda'] = df['echipa_gazda'].map(mapare_echipe)
             df['id_echipa_oaspete'] = df['echipa_oaspete'].map(mapare_echipe)
             
-            # ------------------------------ DEBUGING BLOCK ---------------------------------------------
+            # --- DEBUGING BLOCK ---
+            # Check for rows where the mapping failed, resulting in an empty ID (NaN/Null)
             erori_gazda = df[df['id_echipa_gazda'].isna()]
             erori_oaspete = df[df['id_echipa_oaspete'].isna()]
             if not erori_gazda.empty or not erori_oaspete.empty:
