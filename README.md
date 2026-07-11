@@ -108,7 +108,43 @@ HAVING
 ORDER BY 
     total_goluri_acasa DESC;
 ```
+### UPGRADE
+To implement industry best practices and ensure data integrity, the PostgreSQL database has been upgraded from a flat table structure to a **Normalized Relational Schema** (Star Schema approach). 
 
+### Schema Overview
+- **Dimension Table (`echipe`):** Stores unique participating countries to eliminate data redundancy and prevent text-spelling duplication.
+- **Fact Table (`meciuri_world_cup`):** Stores analytical metrics and match events, utilizing optimized numeric `FOREIGN KEY` constraints pointing to the teams table.
+
+### Relational Database Diagram
+```
++-----------------------------------+
+    |             ECHIPE                |  <----+
+    +-----------------------------------+       |
+    | PK | id_echipa (SERIAL)           |       | 
+    |    | nume_echipa (VARCHAR)        |       | For Echipa Gazdă
+    +-----------------------------------+       |
+                                                |
+                                                |
+    +-----------------------------------+       |
+    |        MECIURI_WORLD_CUP          |       |
+    +-----------------------------------+       |
+    | PK | id_meci (INT)                |       |
+    |    | data_meci (DATE)             |       |
+    |    | faza_competitie (VARCHAR)    |       |
+    |    | status (VARCHAR)             |       |
+    | FK | id_echipa_gazda (INT) -------+-------+
+    | FK | id_echipa_oaspete (INT) -------------+ 
+    |    | goluri_gazda (INT)                   | For Echipa Oaspete
+    |    | goluri_oaspete (INT)                 |
+    |    | eficienta_atac (INT)                 |
+    |    | meci_cu_prelungiri (BOOLEAN)         |
+    |    | scor_final_detaliat (VARCHAR)        |
+    +-----------------------------------+
+ ```   
+### Core Technical Advantages:
+1. **Storage Optimization:** Numeric IDs (`INT`) consume significantly less disk space compared to repeated long text strings (`VARCHAR`).
+2. **Query Performance:** PostgreSQL indexes and filters numerical keys much faster than text matching.
+3. **Data Integrity:** Strict database constraints prevent any accidental data corruption or inconsistent entries.
 ---
 
 ## Power BI Business Insights & Analytics
